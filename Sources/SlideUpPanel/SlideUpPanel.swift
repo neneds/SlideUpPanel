@@ -124,7 +124,7 @@ public class SlideUpPanel: UIViewController {
                 case .expanded:
                     self.view.frame.origin.y = self.vc.view.frame.height - self.cardHeight
                 case .collapsed:
-                    self.view.frame.origin.y = self.vc.view.frame.height - self.handleAreaHeight
+                    self.view.frame.origin.y = self.vc.view.frame.height - (self.handleAreaHeight + self.getSafeAreaHeightOffset())
                 }
             }
             
@@ -194,5 +194,10 @@ public class SlideUpPanel: UIViewController {
         contentArea.removeFromSuperview()
         self.view.addSubview(controller.view)
         controller.view.frame = CGRect(x: 0, y: self.handleArea.frame.maxY, width: self.view.frame.width, height: self.view.frame.height - handleAreaHeight)
+    }
+    
+    private func getSafeAreaHeightOffset() -> CGFloat {
+        let guide = view.safeAreaLayoutGuide
+        return guide.layoutFrame.size.height
     }
 }
