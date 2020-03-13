@@ -203,7 +203,6 @@ public class SlideUpPanel: UIViewController {
     }
     
     private func getSafeAreaHeightOffset() -> CGFloat {
-        let guide = vc.view.safeAreaLayoutGuide
-        return guide.layoutFrame.size.height
+        return  vc.view.safeAreaInsets.bottom
     }
 }
