@@ -7,29 +7,34 @@
 //
 
 import UIKit
+
 public class SlideUpPanel: UIViewController {
+    
     enum CardState {
         case expanded
         case collapsed
     }
-    public var initialCornerRadius:Float = 0
-    public var updatedCornerRadius:Float = 12
-    public var isCornerRadiusAnimatorOn = true
-    public var handleArea = UIView()
-    public var handleAreaHeight : CGFloat = 65
-    public var handleAreaColor : UIColor = UIColor.groupTableViewBackground
-    public var vc : UIViewController!
-    public var contentArea = UIView()
-    public var visualEffectView:UIVisualEffectView!
-    public var cardHeight:CGFloat = 600
-    public var runningAnimations = [UIViewPropertyAnimator]()
-    public var cardVisible = false
-    public var animationProgressWhenInterrupted:CGFloat = 0
-    var nextState:CardState {
+    
+    public var initialCornerRadius: Float = 0
+    public var updatedCornerRadius: Float = 12
+    public var isCornerRadiusAnimatorOn: Bool = false
+    public var handleArea: UIView = UIView()
+    public var handleAreaHeight: CGFloat = 20
+    public var handleAreaColor: UIColor = UIColor.white
+    public var contentAreaBackgroundColor: UIColor = UIColor.white
+    public var vc: UIViewController!
+    public var contentArea: UIView = UIView()
+    public var visualEffectView: UIVisualEffectView!
+    public var cardHeight: CGFloat = 600
+    public var runningAnimations: [UIViewPropertyAnimator] = [UIViewPropertyAnimator]()
+    public var cardVisible: Bool = false
+    public var animationProgressWhenInterrupted: CGFloat = 0
+    
+    var nextState: CardState {
         return cardVisible ? .collapsed : .expanded
     }
     
-    public init(vc : UIViewController, cardHeight : CGFloat?) {
+    public init(vc: UIViewController, cardHeight: CGFloat?) {
         super.init(nibName: nil, bundle: nil)
         self.vc = vc
         self.cardHeight = cardHeight != nil ? cardHeight! : 600
@@ -38,17 +43,19 @@ public class SlideUpPanel: UIViewController {
     required init?(coder aDecoder: NSCoder) {
         super.init(nibName: nil, bundle: nil)
     }
+    
     override public func viewDidLoad() {
         super.viewDidLoad()
         setUi()
         self.view.layer.cornerRadius = CGFloat(initialCornerRadius)
-        print(initialCornerRadius)
     }
+    
     public func setUi(){
         setHandleView()
         setContentArea()
         setupCard()
     }
+    
     public func setHandleView(){
         self.view.addSubview(handleArea)
         handleArea.frame = CGRect(x: 0, y: 0, width: self.view.bounds.width, height: handleAreaHeight)
@@ -60,11 +67,13 @@ public class SlideUpPanel: UIViewController {
         bar.layer.cornerRadius = bar.frame.height / 2
         bar.layer.masksToBounds = true
     }
+    
     public func setContentArea(){
         self.view.addSubview(contentArea)
         contentArea.frame = CGRect(x: 0, y: self.handleArea.frame.maxY, width: self.view.frame.width, height: self.view.frame.height - handleAreaHeight)
-        contentArea.backgroundColor = .white
+        contentArea.backgroundColor = contentAreaBackgroundColor
     }
+    
     public func setupCard()  {
         visualEffectView = UIVisualEffectView()
         visualEffectView.frame = vc.view.frame
@@ -72,15 +81,16 @@ public class SlideUpPanel: UIViewController {
         self.view.frame = CGRect(x: 0, y: vc.view.frame.height - handleAreaHeight, width: vc.view.bounds.width, height: cardHeight)
         self.view.clipsToBounds = true
         
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(SlideUpPanel.handleCardTap(recognzier:)))
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(SlideUpPanel.handleCardTap(recognizer:)))
         let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(SlideUpPanel.handleCardPan(recognizer:)))
         
         self.handleArea.addGestureRecognizer(tapGestureRecognizer)
         self.handleArea.addGestureRecognizer(panGestureRecognizer)
     }
+    
     @objc
-    public func handleCardTap(recognzier:UITapGestureRecognizer) {
-        switch recognzier.state {
+    public func handleCardTap(recognizer:UITapGestureRecognizer) {
+        switch recognizer.state {
         case .ended:
             animateTransitionIfNeeded(state: nextState, duration: 0.9)
         default:
@@ -105,6 +115,7 @@ public class SlideUpPanel: UIViewController {
         }
         
     }
+    
     func animateTransitionIfNeeded (state:CardState, duration:TimeInterval) {
         if runningAnimations.isEmpty {
             let frameAnimator = UIViewPropertyAnimator(duration: duration, dampingRatio: 1) {
@@ -125,7 +136,7 @@ public class SlideUpPanel: UIViewController {
             runningAnimations.append(frameAnimator)
             
             
-            if (isCornerRadiusAnimatorOn){
+            if isCornerRadiusAnimatorOn {
                 let cornerRadiusAnimator = UIViewPropertyAnimator(duration: duration, curve: .linear) {
                     switch state {
                     case .expanded:
@@ -158,6 +169,7 @@ public class SlideUpPanel: UIViewController {
         if runningAnimations.isEmpty {
             animateTransitionIfNeeded(state: state, duration: duration)
         }
+        
         for animator in runningAnimations {
             animator.pauseAnimation()
             animationProgressWhenInterrupted = animator.fractionComplete
@@ -175,7 +187,8 @@ public class SlideUpPanel: UIViewController {
             animator.continueAnimation(withTimingParameters: nil, durationFactor: 0)
         }
     }
-    public func setViewControllerAsContent(controller:UIViewController)  {
+    
+    public func setViewControllerAsContent(controller:UIViewController) {
         self.addChild(controller)
         contentArea.removeFromSuperview()
         self.view.addSubview(controller.view)
