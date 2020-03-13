@@ -21,6 +21,7 @@ public class SlideUpPanel: UIViewController {
     public var handleArea: UIView = UIView()
     public var handleAreaHeight: CGFloat = 20
     public var handleAreaColor: UIColor = UIColor.white
+    public var handleBarColor: UIColor = UIColor.lightGray
     public var contentAreaBackgroundColor: UIColor = UIColor.white
     public var vc: UIViewController!
     public var contentArea: UIView = UIView()
@@ -62,8 +63,8 @@ public class SlideUpPanel: UIViewController {
         handleArea.backgroundColor = handleAreaColor
         let bar = UIView()
         handleArea.addSubview(bar)
-        bar.backgroundColor = .lightGray
-        bar.frame = CGRect(x: self.handleArea.frame.midX - 40, y: handleAreaHeight / 2, width: 80, height: 10)
+        bar.backgroundColor = handleBarColor
+        bar.frame = CGRect(x: self.handleArea.frame.midX - 40, y: handleAreaHeight / 2, width: 80, height: 4)
         bar.layer.cornerRadius = bar.frame.height / 2
         bar.layer.masksToBounds = true
     }
