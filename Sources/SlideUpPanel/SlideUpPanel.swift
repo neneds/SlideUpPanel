@@ -73,7 +73,7 @@ public class SlideUpPanel: UIViewController {
     
     public func setContentArea(){
         self.view.addSubview(contentArea)
-        contentArea.frame = CGRect(x: 0, y: self.handleArea.frame.maxY, width: self.view.frame.width, height: self.view.frame.height - totalHandlerHeight())
+        contentArea.frame = CGRect(x: 0, y: self.handleArea.frame.maxY, width: self.view.frame.width, height: self.view.frame.height - totalHeight())
         contentArea.backgroundColor = contentAreaBackgroundColor
     }
     
@@ -81,7 +81,7 @@ public class SlideUpPanel: UIViewController {
         visualEffectView = UIVisualEffectView()
         visualEffectView.frame = vc.view.frame
         vc.view.addSubview(visualEffectView)
-        self.view.frame = CGRect(x: 0, y: vc.view.frame.height - totalHandlerHeight(), width: vc.view.bounds.width, height: cardHeight)
+        self.view.frame = CGRect(x: 0, y: vc.view.frame.height - totalHeight(), width: vc.view.bounds.width, height: cardHeight)
         self.view.clipsToBounds = true
         
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(SlideUpPanel.handleCardTap(recognizer:)))
@@ -126,7 +126,7 @@ public class SlideUpPanel: UIViewController {
                 case .expanded:
                     self.view.frame.origin.y = self.vc.view.frame.height - self.cardHeight
                 case .collapsed:
-                    self.view.frame.origin.y = self.vc.view.frame.height - self.totalHandlerHeight()
+                    self.view.frame.origin.y = self.vc.view.frame.height - self.totalHeight()
                 }
             }
             
@@ -195,11 +195,17 @@ public class SlideUpPanel: UIViewController {
         self.addChild(controller)
         contentArea.removeFromSuperview()
         self.view.addSubview(controller.view)
-        controller.view.frame = CGRect(x: 0, y: self.handleArea.frame.maxY, width: self.view.frame.width, height: self.view.frame.height - totalHandlerHeight())
+        controller.view.frame = CGRect(x: 0, y: self.handleArea.frame.maxY, width: self.view.frame.width, height: self.view.frame.height - totalHeight())
     }
     
     /// Height of the handle, including safe area offset
     private func totalHandlerHeight() -> CGFloat {
+        let safeAreaHeight = getSafeAreaHeightOffset()
+        return handleAreaHeight + safeAreaHeight
+    }
+    
+    /// Height of the handle, safe area and offset
+    private func totalHeight() -> CGFloat {
         let safeAreaHeight = getSafeAreaHeightOffset()
         return handleAreaHeight + safeAreaHeight + heightOffset
     }
