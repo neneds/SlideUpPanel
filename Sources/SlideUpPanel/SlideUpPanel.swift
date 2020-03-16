@@ -20,6 +20,7 @@ public class SlideUpPanel: UIViewController {
     public var isCornerRadiusAnimatorOn: Bool = false
     public var handleArea: UIView = UIView()
     public var handleAreaHeight: CGFloat = 20
+    public var heightOffset: CGFloat = 0
     public var handleAreaColor: UIColor = UIColor.white
     public var handleBarColor: UIColor = UIColor.lightGray
     public var contentAreaBackgroundColor: UIColor = UIColor.white
@@ -35,9 +36,10 @@ public class SlideUpPanel: UIViewController {
         return cardVisible ? .collapsed : .expanded
     }
     
-    public init(vc: UIViewController, cardHeight: CGFloat?) {
+    public init(vc: UIViewController, cardHeight: CGFloat?, heightOffset: CGFloat = 0) {
         super.init(nibName: nil, bundle: nil)
         self.vc = vc
+        self.heightOffset = heightOffset
         self.cardHeight = cardHeight != nil ? cardHeight! : 600
     }
     
@@ -199,7 +201,7 @@ public class SlideUpPanel: UIViewController {
     /// Height of the handle, including safe area offset
     private func totalHandlerHeight() -> CGFloat {
         let safeAreaHeight = getSafeAreaHeightOffset()
-        return handleAreaHeight + safeAreaHeight
+        return handleAreaHeight + safeAreaHeight + heightOffset
     }
     
     private func getSafeAreaHeightOffset() -> CGFloat {
