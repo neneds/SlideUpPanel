@@ -28,10 +28,11 @@ public class SlideUpPanel: UIViewController {
     public var contentArea: UIView = UIView()
     public var cardHeight: CGFloat = 600
     public var runningAnimations: [UIViewPropertyAnimator] = [UIViewPropertyAnimator]()
-    public var cardVisible: Bool = false
+    public var isCardVisible: Bool = false
     public var animationProgressWhenInterrupted: CGFloat = 0
     public var visualEffectView: UIVisualEffectView?
     public var visualEffectStyle: UIBlurEffect.Style = .dark
+    /// Enable and disable the visual effect view behind the content
     public var isVisualEffectEnabled: Bool = false {
         didSet {
             if visualEffectView != nil {
@@ -51,14 +52,15 @@ public class SlideUpPanel: UIViewController {
     }
     
     var nextState: CardState {
-        return cardVisible ? .collapsed : .expanded
+        return isCardVisible ? .collapsed : .expanded
     }
     
-    public init(vc: UIViewController, cardHeight: CGFloat?, heightOffset: CGFloat = 0) {
+    public init(vc: UIViewController, cardHeight: CGFloat?, heightOffset: CGFloat = 0, isCardVisible: Bool = false) {
         super.init(nibName: nil, bundle: nil)
         self.vc = vc
         self.heightOffset = heightOffset
         self.cardHeight = cardHeight != nil ? cardHeight! : 600
+        self.isCardVisible = isCardVisible
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -75,6 +77,11 @@ public class SlideUpPanel: UIViewController {
         setHandleView()
         setContentArea()
         setupCard()
+        setInitialState()
+    }
+    
+    private func setInitialState() {
+        animateTransitionIfNeeded(state: nextState, duration: 0.9)
     }
     
     public func setHandleView(){
@@ -132,7 +139,7 @@ public class SlideUpPanel: UIViewController {
         case .changed:
             let translation = recognizer.translation(in: self.handleArea)
             var fractionComplete = translation.y / cardHeight
-            fractionComplete = cardVisible ? fractionComplete : -fractionComplete
+            fractionComplete = isCardVisible ? fractionComplete : -fractionComplete
             updateInteractiveTransition(fractionCompleted: fractionComplete)
         case .ended:
             continueInteractiveTransition()
@@ -154,7 +161,7 @@ public class SlideUpPanel: UIViewController {
             }
             
             frameAnimator.addCompletion { _ in
-                self.cardVisible = !self.cardVisible
+                self.isCardVisible = !self.isCardVisible
                 self.runningAnimations.removeAll()
             }
             
@@ -240,6 +247,8 @@ public class SlideUpPanel: UIViewController {
     }
     
     private func getSafeAreaHeightOffset() -> CGFloat {
-        return  vc.view.safeAreaInsets.bottom
+        let offSet = vc.view.safeAreaInsets.bottom
+        // In case of the offset is 0, we can return a close value for safe area insets
+        return offSet > 0 ? offSet : 34.0
     }
 }
