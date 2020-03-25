@@ -26,11 +26,29 @@ public class SlideUpPanel: UIViewController {
     public var contentAreaBackgroundColor: UIColor = UIColor.white
     public var vc: UIViewController!
     public var contentArea: UIView = UIView()
-    public var visualEffectView: UIVisualEffectView!
     public var cardHeight: CGFloat = 600
     public var runningAnimations: [UIViewPropertyAnimator] = [UIViewPropertyAnimator]()
     public var cardVisible: Bool = false
     public var animationProgressWhenInterrupted: CGFloat = 0
+    public var visualEffectView: UIVisualEffectView?
+    public var visualEffectStyle: UIBlurEffect.Style = .dark
+    public var isVisualEffectEnabled: Bool = false {
+        didSet {
+            if visualEffectView != nil {
+                if isVisualEffectEnabled {
+                    return
+                } else {
+                    visualEffectView?.removeFromSuperview()
+                }
+            } else {
+                if isVisualEffectEnabled {
+                    setupVisualEffectView()
+                } else {
+                    return
+                }
+            }
+        }
+    }
     
     var nextState: CardState {
         return cardVisible ? .collapsed : .expanded
@@ -78,9 +96,6 @@ public class SlideUpPanel: UIViewController {
     }
     
     public func setupCard()  {
-        visualEffectView = UIVisualEffectView()
-        visualEffectView.frame = vc.view.frame
-        vc.view.addSubview(visualEffectView)
         self.view.frame = CGRect(x: 0, y: vc.view.frame.height - totalHeight(), width: vc.view.bounds.width, height: cardHeight)
         self.view.clipsToBounds = true
         
@@ -89,6 +104,14 @@ public class SlideUpPanel: UIViewController {
         
         self.handleArea.addGestureRecognizer(tapGestureRecognizer)
         self.handleArea.addGestureRecognizer(panGestureRecognizer)
+    }
+    
+    private func setupVisualEffectView() {
+        visualEffectView = UIVisualEffectView()
+        visualEffectView?.frame = vc.view.frame
+        if let visualEffectView = self.visualEffectView {
+            vc.view.addSubview(visualEffectView)
+        }
     }
     
     @objc
@@ -153,18 +176,24 @@ public class SlideUpPanel: UIViewController {
                 runningAnimations.append(cornerRadiusAnimator)
             }
             
+            animateVisualEffectView(state: state, duration: duration)
+        }
+    }
+    
+    private func animateVisualEffectView(state: CardState, duration: TimeInterval) {
+        if isVisualEffectEnabled {
+            guard let visualEffectView = self.visualEffectView else { return }
             let blurAnimator = UIViewPropertyAnimator(duration: duration, dampingRatio: 1) {
                 switch state {
                 case .expanded:
-                    self.visualEffectView.effect = UIBlurEffect(style: .dark)
+                    visualEffectView.effect = UIBlurEffect(style: self.visualEffectStyle)
                 case .collapsed:
-                    self.visualEffectView.effect = nil
+                    visualEffectView.effect = nil
                 }
             }
             
             blurAnimator.startAnimation()
             runningAnimations.append(blurAnimator)
-            
         }
     }
     
