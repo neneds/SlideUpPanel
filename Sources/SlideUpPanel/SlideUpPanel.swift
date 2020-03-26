@@ -123,7 +123,7 @@ public class SlideUpPanel: UIViewController {
     }
     
     /// Toggle the current state of the card between colapsed/expanded
-    func toggleCardState() {
+    public func toggleCardState() {
         animateTransitionIfNeeded(state: nextState, duration: 0.9)
     }
     
