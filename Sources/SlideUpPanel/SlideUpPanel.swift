@@ -16,8 +16,6 @@ public class SlideUpPanel: UIViewController {
     }
     
     public var initialCornerRadius: Float = 0
-    public var updatedCornerRadius: Float = 12
-    public var isCornerRadiusAnimatorOn: Bool = false
     public var handleArea: UIView = UIView()
     public var handleAreaHeight: CGFloat = 20
     public var heightOffset: CGFloat = 0
@@ -68,7 +66,7 @@ public class SlideUpPanel: UIViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
         setUi()
-        self.view.layer.cornerRadius = CGFloat(initialCornerRadius)
+        self.view.roundTopCorners(radius: CGFloat(initialCornerRadius))
     }
     
     public func setUi(){
@@ -118,10 +116,15 @@ public class SlideUpPanel: UIViewController {
     public func handleCardTap(recognizer:UITapGestureRecognizer) {
         switch recognizer.state {
         case .ended:
-            animateTransitionIfNeeded(state: nextState, duration: 0.9)
+            toggleCardState()
         default:
             break
         }
+    }
+    
+    /// Toggle the current state of the card between colapsed/expanded
+    public func toggleCardState() {
+        animateTransitionIfNeeded(state: nextState, duration: 0.9)
     }
     
     @objc
@@ -160,21 +163,6 @@ public class SlideUpPanel: UIViewController {
             
             frameAnimator.startAnimation()
             runningAnimations.append(frameAnimator)
-            
-            
-            if isCornerRadiusAnimatorOn {
-                let cornerRadiusAnimator = UIViewPropertyAnimator(duration: duration, curve: .linear) {
-                    switch state {
-                    case .expanded:
-                        self.view.layer.cornerRadius = 12
-                    case .collapsed:
-                        self.view.layer.cornerRadius = CGFloat(self.initialCornerRadius)
-                    }
-                }
-                
-                cornerRadiusAnimator.startAnimation()
-                runningAnimations.append(cornerRadiusAnimator)
-            }
             
             animateVisualEffectView(state: state, duration: duration)
         }
@@ -241,5 +229,15 @@ public class SlideUpPanel: UIViewController {
     
     private func getSafeAreaHeightOffset() -> CGFloat {
         return  vc.view.safeAreaInsets.bottom
+    }
+}
+
+
+extension UIView {
+    /// Round the view top corners and option to turn on clip to bounds
+    func roundTopCorners(radius: CGFloat, clipToBounds: Bool = true) {
+        self.layer.cornerRadius = radius
+        self.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        self.clipsToBounds = clipToBounds
     }
 }
