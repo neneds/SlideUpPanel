@@ -66,7 +66,7 @@ public class SlideUpPanel: UIViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
         setUi()
-        self.view.roundTopCorners(radius: CGFloat(initialCornerRadius), clipToBounds: false)
+        self.view.roundTopCorners(radius: CGFloat(initialCornerRadius))
     }
     
     public func setUi(){
