@@ -56,7 +56,7 @@ public class SlideUpPanel: UIViewController {
         super.init(nibName: nil, bundle: nil)
         self.vc = vc
         self.heightOffset = heightOffset
-        self.cardHeight = cardHeight != nil ? cardHeight! : 600
+        self.cardHeight = cardHeight != nil ? cardHeight! : getProportionalHeightForCard()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -233,7 +233,7 @@ public class SlideUpPanel: UIViewController {
 }
 
 
-extension UIView {
+internal extension UIView {
     /// Round the view top corners and option to turn on clip to bounds
     func roundTopCorners(radius: CGFloat, clipToBounds: Bool = true) {
         self.layer.cornerRadius = radius
@@ -241,3 +241,30 @@ extension UIView {
         self.clipsToBounds = clipToBounds
     }
 }
+
+internal extension SlideUpPanel {
+    /// Get current device screen height
+    func currentDeviceHeight() -> CGFloat {
+        let screenSize: CGRect = UIScreen.main.bounds
+        let screenHeight = screenSize.height
+        if screenHeight > 0 {
+            return screenHeight
+        } else {
+            // Iphone 11 pro size, default
+            return 812
+        }
+    }
+    
+    func getProportionalHeightForCard() -> CGFloat {
+        let defaultSize: CGFloat = 540.0 // Default height for iPhone 11 pro
+        let defaultScreenHeight: CGFloat = 812.0 // iPhone 11 pro screen height
+        
+        let currentDeviceScreenHeight = currentDeviceHeight()
+        
+        //Rule of three
+        let multplied = currentDeviceScreenHeight * defaultSize
+        return multplied / defaultScreenHeight
+    }
+}
+
+
