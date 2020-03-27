@@ -66,7 +66,7 @@ public class SlideUpPanel: UIViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
         setUi()
-        self.view.roundTopCorners(radius: CGFloat(initialCornerRadius))
+        self.view.roundTopCorners(radius: CGFloat(initialCornerRadius), clipToBounds: false)
     }
     
     public func setUi(){
@@ -256,7 +256,7 @@ internal extension SlideUpPanel {
     }
     
     func getProportionalHeightForCard() -> CGFloat {
-        let defaultSize: CGFloat = 545.0 // Default height for iPhone 11 pro
+        let defaultSize: CGFloat = 540.0 // Default height for iPhone 11 pro
         let defaultScreenHeight: CGFloat = 812.0 // iPhone 11 pro screen height
         
         let currentDeviceScreenHeight = currentDeviceHeight()
